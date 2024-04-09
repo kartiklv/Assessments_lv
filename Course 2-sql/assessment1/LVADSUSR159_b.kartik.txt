@@ -1,0 +1,63 @@
+1.
+select CustomerID,  avg(DataUsed) as avg_data 
+from customerinteractions
+where Month="March" and Year="2024"
+group by CustomerID
+having avg_data>(select avg(DataUsed) from customerinteractions where Month="March");
+
+2.
+select CustomerID from customerinteractions
+where (select CallDuration from customerinteractions where Month="March")>(select CallDuration from customerinteractions where Month="Febuary");
+
+
+
+3.
+select MessageCount from customerinteractions;
+
+set vAR_data =(select DataUsed from customerinteractions where Month="Febuary");
+
+
+4.
+ select ProductTypeID, sum(TotalSalesAmount) as Total_sales from quarterlysales where ProductTypeID=1;
+
+
+5.
+select ProductTypeID, sum(TotalSalesAmount) as Total_sales from quarterlysales 
+ where Quarter="Q1"
+ group by ProductTypeID
+ order by Total_sales desc;
+
+
+
+6.
+select avg(TotalSalesAmount/UnitsSold) as avg_sales_per_unit_sold from quarterlysales where Quarter="Q2" and Year="2024" and ProductTypeID=1;
+
+7.
+select Region, ConsumptionKWh
+ from sectorenergyconsumption 
+ where (EnergySource="Solar" or EnergySource="Wind") and ConsumptionKWh>(select avg(ConsumptionKWh) from sectorenergyconsumption)
+
+8.
+select Region, ConsumptionKWh
+ from sectorenergyconsumption 
+ where (EnergySource="Solar" or EnergySource="Wind") and ConsumptionKWh>(select avg(ConsumptionKWh) from sectorenergyconsumption)
+
+
+9.
+select sum(ConsumptionKWh) from sectorenergyconsumption where EnergySource="Fossil Fuels";
+select sum(ConsumptionKWh) from sectorenergyconsumption where EnergySource="Solar" or EnergySource="Wind";
+
+10.
+select CustomerName from insuranceactivities 
+ where (FeedbackScore>(select avg(FeedbackScore) from insuranceactivities) or ClaimsCount>(select avg(ClaimsCount) from insuranceactivities)) and Investigation="No";
+ 
+
+11.
+select sum(AnnualPremium) as total_premium_revenue from insuranceactivities
+ where Investigation="No" and (FeedbackScore>(select avg(FeedbackScore) from insuranceactivities) and ClaimsCount<=1)
+
+
+12.
+select PolicyType, ClaimsCount, avg(FeedbackScore) as avg_satisfaction_score from insuranceactivities
+ group by PolicyType, ClaimsCount
+ order by ClaimsCount asc; 
