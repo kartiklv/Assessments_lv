@@ -1,0 +1,82 @@
+1.
+select maintenance_id, cost from l1_maintenance_records where cost>(select avg(cost) from l1_maintenance_records);
+
+2.
+select maintenance_type, count(*) as frequency from l1_maintenance_records 
+where month(maintenance_date)=3 and year(maintenance_date)=2024
+group by maintenance_type
+order by frequency desc;
+
+3.
+select technician_name, avg(cost) as Highest_tasks_and_avg_cost from l1_maintenance_records
+where month(maintenance_date)=3 and year(maintenance_date)=2024
+group by technician_name
+union all
+select technician_name, count(*) as Highest_tasks_and_avg_cost from l1_maintenance_records
+where month(maintenance_date)=3 and year(maintenance_date)=2024
+group by technician_name
+order by Highest_tasks_and_avg_cost desc limit 1;
+
+
+4.
+select product_id, avg(incident_count_pre_update-incident_count_post_update) as avg 
+from l2_updates
+group by product_id;
+
+
+5.
+select update_id, user_feedback_score from l2_updates
+order by user_feedback_score desc limit 1;
+
+
+6.
+select product_id, (incident_count_pre_update-incident_count_post_update) as Least_Improvement_count
+from l2_updates 
+order by Least_Improvement_count desc limit 1;
+
+
+7.
+select p.patient_name, f.facility_name, v.reason_for_visit
+from l3_patients p 
+join l3_visits v using (patient_id)
+join l3_facilities f using(facility_id);
+
+8.
+select f.facility_name from l3_facilities f
+join l3_visits v using (facility_id)
+where v.visit_id in (select visit_id from l3_visits 
+where reason_for_visit="Emergency" and month(visit_date)=3);
+
+
+9.
+
+select p.insurance_provider as Insurance_provider, group_concat(p.patient_name) as patients
+from l3_patients p
+join l3_visits v using(patient_id)
+join l3_treatments t using(visit_id)
+where treatment="Surgery" and month(v.visit_date)>=1 and month(v.visit_date)<=3
+group by insurance_provider;
+
+
+10.
+select p.category as category, p.product_name as products from l4_products p
+where product_id in (select product_id from l4_sales s where s.product_id=p.product_id)
+group by category,products;
+
+
+11.
+create or replace view sales_view as
+(select st.region as region, sum(p.price*s.quantity) as total_sales 
+from l4_stores st
+join l4_sales s using(store_id)
+join l4_products p using(product_id)
+group by region
+);
+
+
+12.
+select p.product_name from l4_products p
+left join l4_sales s
+where s.store_id not in(select store_id from l4_stores);
+
+
